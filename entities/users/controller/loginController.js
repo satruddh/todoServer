@@ -8,7 +8,13 @@ module.exports.postReq=async (req,res)=>{
 
   let user = await userLogin(username)
 
-  console.log('user ==>',user)
+  if(!user){
+    res.render("login",{
+      err : "User Not Found"
+    })
+
+    return
+  }
 
   let match  = await bcrypt.compare(password,user.password)
 
