@@ -1,27 +1,26 @@
+const { none } = require("../../todos/middleware/multerInit")
 const userLogin = require("../services/loginService")
+const bcrypt = require('bcrypt')
 
-module.exports.postReq=(req,res)=>{
+module.exports.postReq=async (req,res)=>{
   let username = req.body.username
   let password = req.body.password
 
-  userLogin(username).then((user)=>{
-    console.log('user==',user)
-    if(user)
-    {
-      if(user.password === password){
-        req.session.isAuthenticated = true
-        req.session.username = username
-        req.session.UName = user.name
+  let user = await userLogin(username)
 
-        res.redirect("/todos/")
-        return
-      }
-      res.render("login",{err : "Wrong password"})
-      return
-    }
+  console.log('user ==>',user)
 
-    res.render("login",{err : "User Not Found"})
-  })
+  let match  = await bcrypt.compare(password,user.password)
+
+  if(!match){
+    res.render("login",{err : "Invalid credentials"})
+    return
+  }
+  req.session.isAuthenticated = true
+  req.session.username = user.username
+  req.session.UName = user.name
+  res.redirect("/todos/")
+  
 }
 
 module.exports.getReq = (req,res)=>{

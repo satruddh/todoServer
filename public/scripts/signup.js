@@ -39,16 +39,14 @@ signupBtn.addEventListener('click', () => {
         showErr("Please enter Name")
         return
     }
-
-    if (isValid(password) && isValid(confirmPassword)) {
-        if (password !== confirmPassword) {
-            showErr("Password Mismatch!")
-            return
-        }
+    
+    if(password != confirmPassword){
+        showErr("Password Mismatch")
+        return
     }
-    else {
-        showErr("enter passwords!")
-        return;
+    else if(!checkPassword(password)){
+        showErr("Minimum Length: 8 characters. Password should contain atleast One Capital Letter, one small letter, one digit, one special character - !@#$%^&*")
+        return
     }
 
     console.log("Success!!")
@@ -58,4 +56,9 @@ signupBtn.addEventListener('click', () => {
 function showErr(errmsg) {
     errormsg.innerHTML = errmsg
     errormsg.style.display = "block"
+}
+
+function checkPassword(pass){
+    let reg = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/
+    return reg.test(pass)
 }
